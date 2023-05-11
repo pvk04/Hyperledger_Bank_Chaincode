@@ -64,9 +64,10 @@ const ROLES = {
 
 class User {
   static #id = 0;
-  constructor(role, name = "", balance = 0) {
+  constructor(role, shopId, name = "", balance = 0) {
     this.id = User.#id++;
     this.role = role;
+    this.shopId = shopId;
     this.name = name;
     this.balance = balance;
   }
@@ -79,14 +80,14 @@ class UsersContract extends Contract {
 
   async initContract(ctx) {
     const users = {};
-    users["bank"] = new User(ROLES.BANK, "", 10000);
-    users["provider"] = new User(ROLES.PROVIDER, "", 0);
+    users["bank"] = new User(ROLES.BANK, -1, "", 10000);
+    users["provider"] = new User(ROLES.PROVIDER, -1, "", 0);
 
     return await ctx.userList.setUsers(users);
   }
 
   async registration(ctx, login, name) {
-    const user = new User(ROLES.BUYER, name);
+    const user = new User(ROLES.BUYER, -1, name);
     return await ctx.userList.setUser(login, user);
   }
 }

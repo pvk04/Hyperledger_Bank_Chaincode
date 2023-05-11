@@ -56,8 +56,8 @@ class Request {
 
 const STATUS = {
   WAITING: 0,
-  ACCEPTED: 1,
-  DECLINED: 2,
+  ACCEPT: 1,
+  DECLINE: 2,
 };
 
 class RequestsContract extends Contract {
@@ -83,6 +83,28 @@ class RequestsContract extends Contract {
 
     return await ctx.requestsList.setRequest(request);
   }
+
+  async answerRequest(ctx, userLogin, requestId, answer) {
+    const request = await ctx.requestsList.getRequest(requestId);
+    const user = await ctx.userList.getUser(request.user);
+    const answerer = await ctx.userList.getUser(userLogin);
+
+    if (answerer.role !== ROLES.ADMIN) {
+      return new Error();
+    }
+    if (request.status !== STATUS.WAITING) {
+      return new Error();
+    }
+
+    if (user.role === request.role || answer === false) {
+      return await ctx.requestsList.answerRequest(requestId, STATUS.DECLINE);
+    }
+
+    // 
+    return await ctx.requestsList.answerRequest(requestId, STATUS.ACCEPT);
+  }
+
+
 }
 
 module.exports.RequestsList = RequestsList;
