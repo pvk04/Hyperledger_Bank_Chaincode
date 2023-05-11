@@ -18,8 +18,7 @@ class UserList {
   }
 
   async getUser(login) {
-    const UserList = await this.ctx.stub.getState(this.KEY);
-    const users = JSON.parse(UserList);
+    const users = await this.getUsers();
     return users[login];
   }
 
@@ -59,16 +58,17 @@ const ROLES = {
   BUYER: 0,
   SELLER: 1,
   ADMIN: 2,
+  BANK: 3,
+  PROVIDER: 4,
 };
 
 class User {
   static #id = 0;
-  constructor(role, login, name) {
+  constructor(role, name = "", balance = 0) {
     this.id = User.#id++;
     this.role = role;
     this.name = name;
-    this.login = login;
-    this.balance = 0;
+    this.balance = balance;
   }
 }
 
@@ -79,26 +79,18 @@ class UsersContract extends Contract {
 
   async initContract(ctx) {
     const users = {};
+    users["bank"] = new User(ROLES.BANK, "", 10000);
+    users["provider"] = new User(ROLES.PROVIDER, "", 0);
+
     return await ctx.userList.setUsers(users);
   }
 
   async registration(ctx, login, name) {
-    const user = new User(ROLES.BUYER, login, name);
-    return await ctx.userList.setUser(user);
-  }
-
-  async setBuyer(ctx, login) {
-    return await ctx.userList.setAdmin(login);
-  }
-
-  async setSeller(ctx, login) {
-    return await ctx.userList.setSeller(login);
-  }
-
-  async setAdmin(ctx, login) {
-    return await ctx.userList.setSeller(login);
+    const user = new User(ROLES.BUYER, name);
+    return await ctx.userList.setUser(login, user);
   }
 }
 
 module.exports.UserList = UserList;
 module.exports.UsersContract = UsersContract;
+module.exports.ROLES = ROLES;

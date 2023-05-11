@@ -1,5 +1,5 @@
-import { Context, Contract } from "fabric-contract-api";
-import { UserList } from "./Users";
+const { Context, Contract } = require("fabric-contract-api");
+const { UserList } = require("./Users");
 
 class ShopList {
   constructor(ctx) {
@@ -191,4 +191,4 @@ class ShopContract extends Contract {
 }
 
 module.exports.ShopList = ShopList;
-module.expoerts.ShopContract = ShopContract;
+module.exports.ShopContract = ShopContract;
