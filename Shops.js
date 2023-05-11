@@ -1,5 +1,5 @@
 const { Context, Contract } = require("fabric-contract-api");
-const { UserList } = require("./Users");
+const { UserList, ROLES } = require("./Users");
 
 class ShopList {
   constructor(ctx) {
@@ -31,8 +31,15 @@ class ShopList {
   }
 
   async setWorker(shopId, workerLogin) {
-    const shops = this.getShops();
+    const shops = await this.getShops();
     shops[shopId].workers.push(workerLogin);
+    return await this.setShops(shops);
+  }
+
+  async removeWorker(shopId, workerLogin) {
+    const shops = await this.getShops();
+    const workerId = shops[shopId].workers.indexOf(workerLogin);
+    shops[shopId].workers.splice(workerId, 1);
     return await this.setShops(shops);
   }
 
@@ -57,6 +64,12 @@ class ShopList {
   async likeComment(shopId, rateId, commentId, userLogin, like) {
     const shops = await this.getShops();
     shops[shopId].rates[rateId].comments[commentId].likes[userLogin] = like;
+    return await this.setShops(shops);
+  }
+
+  async deleteShop(shopId) {
+    const shops = await this.getShops();
+    shops.splice(shopId, 1);
     return await this.setShops(shops);
   }
 }
@@ -187,6 +200,21 @@ class ShopContract extends Contract {
       userLogin,
       like
     );
+  }
+
+  async deleteShop(ctx, shopId, userLogin) {
+    const shop = await ctx.shopList.getShop(shopId);
+    const user = await ctx.userList.getUser(userLogin);
+
+    if (user.role !== ROLES.ADMIN) {
+      return new Error();
+    }
+
+    // set all workers roles to buyers
+    for (worker of shop.workers) {
+      await ctx.userList.setBuyer(worker);
+    }
+    return await ctx.shopList.deleteShop(shopId);
   }
 }
 

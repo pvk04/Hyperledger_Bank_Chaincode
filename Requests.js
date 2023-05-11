@@ -1,5 +1,6 @@
 const { Context, Contract } = require("fabric-contract-api");
 const { UserList, ROLES } = require("./Users");
+const { ShopList } = require("./Shops");
 
 class RequestsList {
   constructor(ctx) {
@@ -42,6 +43,7 @@ class RequestsCTX extends Context {
     super();
     this.requestsList = new RequestsList(this);
     this.userList = new UserList(this);
+    this.shopList = new ShopList(this);
   }
 }
 
@@ -96,15 +98,38 @@ class RequestsContract extends Contract {
       return new Error();
     }
 
+    // if user already have this role or answer === false
     if (user.role === request.role || answer === false) {
       return await ctx.requestsList.answerRequest(requestId, STATUS.DECLINE);
     }
 
-    // 
+    // if answer === true
+    if (request.role === ROLES.SELLER) {
+      await ctx.userList.setSeller(request.login);
+      await ctx.shopList.setWorker(request.login);
+    } else if (request.role === ROLES.BUYER) {
+      await ctx.userList.setBuyer(login);
+      await ctx.shopList.removeWorker(request.user);
+    }
     return await ctx.requestsList.answerRequest(requestId, STATUS.ACCEPT);
   }
 
+  async setAdmin(ctx, userLogin, newAdmninLogin) {
+    const newAdmin = await ctx.userList.getUser(newAdmninLogin);
+    const caller = await ctx.userList.getUser(userLogin);
 
+    if (caller.role !== ROLES.ADMIN) {
+      return new Error();
+    }
+    if (newAdmin.role !== ROLES.BUYER || newAdmin.role !== ROLES.SELLER) {
+      return new Error();
+    }
+
+    if (newAdmin.role === ROLES.SELLER) {
+      await ctx.shopList.removeWorker(newAdmninLogin);
+    }
+    return await ctx.userList.setAdmin(newAdmninLogin);
+  }
 }
 
 module.exports.RequestsList = RequestsList;
