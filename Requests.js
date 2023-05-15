@@ -72,6 +72,14 @@ class RequestsContract extends Contract {
     return await ctx.requestsList.setRequests(requests);
   }
 
+  async getRequests(ctx) {
+    return await ctx.requestsList.getRequests();
+  }
+
+  async getRequest(ctx, id) {
+    return await ctx.requestsList.getRequest(id);
+  }
+
   async setRequest(ctx, userLogin, role, shopId) {
     const request = new Request(userLogin, role, shopId);
     const user = await ctx.userList.getUser(userLogin);

@@ -135,6 +135,14 @@ class ShopContract extends Contract {
     return await ctx.shopList.setShops(shops);
   }
 
+  async getShops(ctx) {
+    return await ctx.shopList.getShops();
+  }
+
+  async getShop(ctx, id) {
+    return await ctx.shopList.getShop(id);
+  }
+
   async setShop(ctx, city) {
     const shop = new Shop(city);
 

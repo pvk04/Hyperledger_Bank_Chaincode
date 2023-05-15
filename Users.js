@@ -25,7 +25,8 @@ class UserList {
   async setUser(login, user) {
     const users = await this.getUsers();
     users[login] = user;
-    return await this.setUsers(users);
+    await this.setUsers(users);
+    return user;
   }
 
   async setBuyer(login) {
@@ -83,6 +84,14 @@ class UsersContract extends Contract {
     users["provider"] = new User(ROLES.PROVIDER, "", 0);
 
     return await ctx.userList.setUsers(users);
+  }
+
+  async getUsers(ctx) {
+    return await ctx.userList.getUsers();
+  }
+
+  async getUser(ctx, login) {
+    return await ctx.userList.getUser(login);
   }
 
   async registration(ctx, login, name) {

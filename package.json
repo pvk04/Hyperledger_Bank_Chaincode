@@ -1,21 +1,13 @@
 {
-  "name": "chaincode",
+  "name": "test",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pvk04/Hyperledger_Bank_Chaincode.git"
+    "start": "fabric-chaincode-node start"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/pvk04/Hyperledger_Bank_Chaincode/issues"
-  },
-  "homepage": "https://github.com/pvk04/Hyperledger_Bank_Chaincode#readme",
   "dependencies": {
     "fabric-contract-api": "^2.5.2",
     "fabric-shim": "^2.5.2"
