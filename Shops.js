@@ -160,7 +160,7 @@ class ShopContract extends Contract {
     return await ctx.shopList.setWorker(shopId, workerLogin);
   }
 
-  async setRate(ctx, shopId, userLogin, rate, text = "") {
+  async setRate(ctx, shopId, userLogin, rate, text) {
     const newRate = new Rate(userLogin, rate, text);
     // const user = await ctx.userList.getUser(userLogin);
 
