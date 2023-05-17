@@ -172,10 +172,13 @@ class ShopContract extends Contract {
   }
 
   async likeRate(ctx, shopId, userLogin, rateId, isLike) {
-    const like = new Like(userLogin, isLike);
+    const like = new Like(isLike);
     const shops = await ctx.shopList.getShops();
 
-    if (shops[shopId].rates[rateId].likes[userLogin]) {
+    if (
+      shops[shopId].rates[rateId].likes[userLogin] &&
+      shops[shopId].rates[rateId].likes[userLogin].isLike == isLike
+    ) {
       delete shops[shopId].rates[rateId].likes[userLogin];
 
       return await ctx.shopList.setShops(shops);
