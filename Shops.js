@@ -217,7 +217,7 @@ class ShopContract extends Contract {
     const shop = await ctx.shopList.getShop(shopId);
     const user = await ctx.userList.getUser(userLogin);
 
-    if (user.role !== ROLES.ADMIN) {
+    if (user.role != ROLES.ADMIN) {
       return new Error();
     }
 

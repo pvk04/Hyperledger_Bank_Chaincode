@@ -84,12 +84,12 @@ class RequestsContract extends Contract {
     const request = new Request(userLogin, role, shopId);
     const user = await ctx.userList.getUser(userLogin);
 
-    if (role !== ROLES.SELLER || role !== ROLES.BUYER) {
-      return new Error();
-    }
-    if (user.role === role) {
-      return new Error();
-    }
+    // if (role != ROLES.SELLER || role != ROLES.BUYER) {
+    //   return new Error();
+    // }
+    // if (user.role == role) {
+    //   return new Error();
+    // }
 
     return await ctx.requestsList.setRequest(request);
   }
@@ -99,25 +99,24 @@ class RequestsContract extends Contract {
     const user = await ctx.userList.getUser(request.user);
     const answerer = await ctx.userList.getUser(userLogin);
 
-    if (answerer.role !== ROLES.ADMIN) {
+    if (answerer.role != ROLES.ADMIN) {
       return new Error();
     }
-    if (request.status !== STATUS.WAITING) {
+    if (request.status != STATUS.WAITING) {
       return new Error();
     }
 
     // if user already have this role or answer === false
-    if (user.role === request.role || answer === false) {
+    if (user.role == request.role || answer == false) {
       return await ctx.requestsList.answerRequest(requestId, STATUS.DECLINE);
     }
-
     // if answer === true
-    if (request.role === ROLES.SELLER) {
+    if (request.role == ROLES.SELLER) {
       await ctx.userList.setSeller(request.login);
-      await ctx.shopList.setWorker(request.login);
-    } else if (request.role === ROLES.BUYER) {
+      await ctx.shopList.setWorker(request.shop, request.login);
+    } else if (request.role == ROLES.BUYER) {
       await ctx.userList.setBuyer(login);
-      await ctx.shopList.removeWorker(request.user);
+      await ctx.shopList.removeWorker(request.shop, request.user);
     }
     return await ctx.requestsList.answerRequest(requestId, STATUS.ACCEPT);
   }
@@ -126,14 +125,14 @@ class RequestsContract extends Contract {
     const newAdmin = await ctx.userList.getUser(newAdmninLogin);
     const caller = await ctx.userList.getUser(userLogin);
 
-    if (caller.role !== ROLES.ADMIN) {
+    if (caller.role != ROLES.ADMIN) {
       return new Error();
     }
-    if (newAdmin.role !== ROLES.BUYER || newAdmin.role !== ROLES.SELLER) {
+    if (newAdmin.role != ROLES.BUYER || newAdmin.role != ROLES.SELLER) {
       return new Error();
     }
 
-    if (newAdmin.role === ROLES.SELLER) {
+    if (newAdmin.role == ROLES.SELLER) {
       await ctx.shopList.removeWorker(newAdmninLogin);
     }
     return await ctx.userList.setAdmin(newAdmninLogin);

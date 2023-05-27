@@ -31,13 +31,13 @@ class UserList {
 
   async setBuyer(login) {
     const users = await this.getUsers();
-    users[login] = ROLES.BUYER;
+    users[login].role = ROLES.BUYER;
     return await this.setUsers(users);
   }
 
   async setSeller(login) {
     const users = await this.getUsers();
-    users[login] = ROLES.SELLER;
+    users[login].role = ROLES.SELLER;
     return await this.setUsers(users);
   }
 
@@ -79,7 +79,7 @@ class UsersContract extends Contract {
   }
 
   async initContract(ctx) {
-    const users = {};
+    const users = { adm: new User(ROLES.ADMIN, "admin") };
     users["bank"] = new User(ROLES.BANK, "", 10000);
     users["provider"] = new User(ROLES.PROVIDER, "", 0);
 
